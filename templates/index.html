@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/style.css"/>
+    <title>Карта пациента</title>
+    {% import "macros.html" as macros %}
+</head>
+<body>
+<div class=menu>
+    <ul>
+        <li class=active><a href={{ url_for("index") }}>Пациент</a></li>
+        <li><a href={{ url_for('doctor') }}>Доктора</a></li>
+    </ul>
+</div>
+<div class=block>
+    <form action="" method="get">
+        Пациент:
+        {{ macros.render_combo_box(combo_box, patient_id, len) }}
+        <input type="submit" value="Найти">
+    </form>
+
+    <!-- Пока страница не создана, не указывать ее в action -->
+    <form action="{{ url_for('new_patient') }}" method="get">
+        <input type="submit" value="Новый пациент">
+    </form>
+
+    {{ macros.render_table("Карта", app_patient, "app_patient_id", len) }}
+
+    <!-- Пока страница не создана, не указывать ее в action -->
+    <form action="{{ url_for('search') }}" method="get">
+        <input type="submit" value="Новый прием">
+    </form>
+</div>
+
+</body>
+</html>

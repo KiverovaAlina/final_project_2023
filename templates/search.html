@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск приемов</title>
+    <link rel="stylesheet" href="/static/css/search.css">
+    <link rel="stylesheet" href="/static/css/style.css">
+    {% import "macros.html" as macros %}
+</head>
+<body>
+<div class=menu>
+    <ul>
+        <li class=active><a href="/">Поиск приемов</a></li>
+    </ul>
+</div>
+<main class="main">
+    <aside class="search_bar">
+        <form action="" method="post">
+            {% for section, data, choices in zip(sections, all_data, all_choices) %}
+                {{ macros.render_selection_section(section, data, choices, len) }}
+            {% endfor %}
+            <input class="selection_section__button button" type="submit" value="Найти">
+            <input class="selection_section__button button" type="submit" name="clear" value="Очистить">
+        </form>
+    </aside>
+    <div class="books_wrapper">
+        <form action="{{ url_for('index') }}" method="get" class="back_button">
+            <input type="submit" name="noselect" value="Не выбирать прием">
+        </form>
+        <p class="search_choices">
+            {% for section, data, choices in zip(sections, all_data, all_choices) %}
+                {{ macros.render_selection_tags(section, data, choices, len) }}
+            {% endfor %}
+        </p>
+        <div class="book_cards_wrapper">
+            {% for i in range(len(appointments)) %}
+                {{ macros.render_app_card(appointments.loc[i]) }}
+            {% endfor %}
+        </div>
+    </div>
+</main>
+</body>
+</html>

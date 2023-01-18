@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+
+<!-- Макрос для вывода таблицы без ключевого столбца,
+переданного параметром -->
+{% macro render_table(table_name, relation, id, len) %}
+    <p>
+        <b>{{ table_name }}</b>
+    </p>
+    {% set n = len(relation) %}
+    {% if n == 0 %}
+        <p>У вас нет приемов</p>
+    {% else %}
+        <table class="table">
+            <thead>
+            <tr>
+                {% for name in relation.dtypes.index %}
+                    {% if name != id %}
+                        <th>{{ name }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for i in range(n) %}
+                <tr>
+                    {% for name in relation.dtypes.index %}
+                        {% if name != id %}
+                            <td>
+                                {% if relation.loc[i, name] == None %}
+                                    <form action='' method="get">
+                                        <input type="hidden" name=close_app_patient_id
+                                               value={{ relation.loc[i, "app_patient_id"] }}>
+                                        <!--<form action="" method="post">
+                                            <input type="submit" value="Закрыть">
+                                        </form>-->
+                                               
+                                    </form>
+                                {% else %}
+                                    {{ relation.loc[i, name] }}
+                                {% endif %}
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endmacro %}
+
+<!-- Формирование поля со списком -->
+{% macro render_combo_box(combo_box, patient_id, len) %}
+    <select name="patient" required>
+        {% set n = len(combo_box) %}
+        <!-- формируем строки списка (каждое значение поля
+        reader_name - строка списка) в виде
+        <option [selected] value = код_читателя> ФИО </option>
+        -->
+        {% for i in range(n) %}
+            {% set id_r = combo_box.loc[i, "patient_id"] %}
+            <!-- атрибут value элемента будет совпадать с id читателя -->
+            {% if id_r == patient_id %}
+                <!-- если код читателя из таблицы совпадает с кодом
+                текущего читателя устанавливаем атрибут selected -->
+                <option selected value={{ id_r }}>
+                    {% else %}
+                <option value={{ id_r }}>
+            {% endif %}
+        {{ combo_box.loc[i, "patient_name"] }}
+        </option>
+        {% endfor %}
+    </select>
+{% endmacro %}
+
+{% macro render_selection_section(section, data, choices, len) %}
+    <details class="selection_section" open>
+        <summary class="selection_section__header">
+            {% if section == 'types' %}
+                Тип приема:
+            {% elif section == 'doctors' %}
+                Доктор:
+            {% elif section == 'symptoms' %}
+                Симптом:
+            {% elif section == 'diagnoses' %}
+                Диагноз:
+            {% endif %}
+        </summary>
+        <fieldset class="selection_section__body">
+            {% for i in range(len(data)) %}
+                <label class="option_label">
+                    <input type="checkbox" name="{{ section }}"
+                            {% set value = data.iloc[i, 0] %}
+                           value="{{ value }}"
+                            {% if value in choices %}
+                           checked
+                            {% endif %}
+                    >
+                    {{ value }} ({{ data.iloc[i, 1] }})
+                </label>
+            {% endfor %}
+        </fieldset>
+    </details>
+{% endmacro %}
+
+{% macro render_selection_tags(section, data, choices, len) %}
+    <span class="section_name">{% if section == 'types' %}
+        Тип приема:
+        
+    {% elif section == 'doctors' %}
+        Доктор:
+    {% elif section == 'symptoms' %}
+        Симптом:
+    {% elif section == 'diagnoses' %}
+        Диагноз:
+    {% endif %}
+    </span>
+    {% if choices != [] %}
+        {% for i in range(len(data)) %}
+            {% set value = data.iloc[i, 0] %}
+            {% if value in choices %}
+                <span class="section_choice">{{ value }}<span class="gap">, </span></span>
+            {% endif %}
+        {% endfor %}
+    
+    {% endif %}
+{% endmacro %}
+
+{% macro render_app_card(appointment) %}
+    <div class="book_card">
+        {% set attributes = ['Тип_приема', 'Доктор', 'Диагноз', 'Симптом'] %}
+        {% for attribute in attributes %}
+            <p class="book_info">{{ attribute }}:
+                <span class="book_info__value">
+                        {{ appointment[attribute] }}
+                </span>
+            </p>
+        {% endfor %}
+        <form action="{{ url_for('index') }}" method="get">
+            <input class="book_card__button button" type="submit" value="Выбрать">
+            <label>
+                <input hidden type="text" name="appointment" value="{{ appointment.appointment_id }}">
+            </label>
+        </form>
+    </div>
+{% endmacro %}
+
+{% macro render_query_table(table_name, relation, id, len) %}
+    <p>
+        <b>{{ table_name }}</b>
+    </p>
+    {% set n = len(relation) %}
+    {% if n == 0 %}
+        <p>Нет информации.</p>
+    {% else %}
+        <table class="table">
+            <thead>
+            <tr>
+                {% for name in relation.dtypes.index %}
+                    {% if name != id %}
+                        <th>{{ name }}</th>
+                    {% endif %}
+                {% endfor %}
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for i in range(n) %}
+                <tr>
+                    {% for name in relation.dtypes.index %}
+                        {% if name != id %}
+                            <td>
+                                {{ relation.loc[i, name] }}
+                            </td>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+{% endmacro %}
+
+
+{% macro render_clients2(combo_box, doctor_id, len) %}
+    <select name="speciality" required>
+        {% set n = len(combo_box) %}
+        <!-- формируем строки списка (каждое значение поля
+        reader_name - строка списка) в виде
+        <option [selected] value = код_читателя> ФИО </option>
+        -->
+        {% for i in range(n) %}
+            {% set id_r = combo_box.loc[i, "doctor_id"] %}
+            <!-- атрибут value элемента будет совпадать с id читателя -->
+            {% if id_r == doctor_id %}
+                <!-- если код читателя из таблицы совпадает с кодом
+                текущего читателя устанавливаем атрибут selected -->
+                <option selected value={{ id_r }} name="selected_id">
+                    {% else %}
+                <option value={{ id_r }}>
+            {% endif %}
+        {{ combo_box.loc[i, "speciality"] }}
+        </option>
+        {% endfor %}
+    </select>
+{% endmacro %}
+

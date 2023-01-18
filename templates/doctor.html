@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/style.css"/>
+    <title>Книги</title>
+    {% import "macros.html" as macros %}
+</head>
+<body>
+<div class=menu>
+    <ul>
+        <li><a href={{ url_for("index") }}>Пациент</a></li>
+        <li class=active><a href={{ url_for('doctor') }}>Доктора</a></li>
+    </ul>
+</div>
+<div>
+    <form action='' method="get">
+     Доктор:
+     <!-- Создаем поле со списком с именем reader
+     (использовать макрос, созданный в ЛР 5 -->
+     {{ macros.render_clients2(combo_box, doctor_id, len) }}
+     <input type="submit" value="Выбрать" >
+ </form>
+<!--<form action="" method="get">-->
+<!--            <select class="menu_select" name="select">-->
+<!--                {% for i in range(len(selected)) %}-->
+<!--                    {% if choice == selected[i] %}-->
+<!--                        <option value="{{ selected[i] }}" selected>{{ selected[i] }}</option>-->
+<!--                    {% else %}-->
+<!--                        <option value="{{ selected[i] }}">{{ selected[i] }}</option>-->
+<!--                    {% endif %}-->
+<!--                {{ selected[i] }}-->
+<!--                {% endfor %}-->
+<!--            </select>-->
+<!--            <input type="submit" value="Выбрать">-->
+<!--</form>-->
+ {% if flag == 2 %}
+ <div>
+     <img src='{{image}}' width="200">
+ </div>
+ <div class="card2" >
+     <p> {{ combo_box.loc[doctor_id-1, "speciality"] }} - это {{discription}}</p>
+ </div>
+     <form action='' method="get" >
+ <input type="submit" value="Очистить" name="clear">
+</form>
+ {% endif %}
+ {% if flag == 1 %}
+ <p></p>
+ {% endif %}
+
+
+</div>
+</body>
+</html>
